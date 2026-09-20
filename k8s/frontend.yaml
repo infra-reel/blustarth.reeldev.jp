@@ -18,14 +18,14 @@ spec:
         tier: prod
       containers:
         - name: frontend
-          image: image: ghcr.io/infra-reel/bluestarth-frontend:latest
+          image: ghcr.io/infra-reel/bluestarth-frontend:latest
           ports:
             - containerPort: 3000
           env:
             - name: BACKEND_URL
               value: "http://backend.bluestarth.svc.cluster.local:4000"
             - name: NODE_ENV
-              value: production
+              value: "production"
 ---
 apiVersion: v1
 kind: Service
