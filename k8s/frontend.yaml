@@ -26,6 +26,8 @@ spec:
               value: "http://backend.bluestarth.svc.cluster.local:4000"
             - name: NODE_ENV
               value: "production"
+            - name: NEXT_PUBLIC_SITE_URL
+              value: "https://bluestarth.reeldev.jp"
 ---
 apiVersion: v1
 kind: Service
