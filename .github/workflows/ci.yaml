@@ -75,27 +75,6 @@ jobs:
           cache-to:   type=gha,mode=max
 
   # ─────────────────────────────────────────────────
-  # ArgoCD sync trigger（main または手動実行時）
-  # ─────────────────────────────────────────────────
-argocd-sync:
-    needs: build
-    runs-on: ubuntu-latest
-    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
-    steps:
-      - name: Trigger ArgoCD sync
-        run: |
-          # ARGOCD_SERVER が空の場合はエラーを出して終了するガード
-          if [ -z "${{ secrets.ARGOCD_SERVER }}" ]; then
-            echo "Error: ARGOCD_SERVER secret is not set."
-            exit 1
-          fi
-
-          curl -sS -X POST \
-            -H "Authorization: Bearer ${{ secrets.ARGOCD_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            "${{ secrets.ARGOCD_SERVER }}/api/v1/applications/bluestarth/sync"
-
-  # ─────────────────────────────────────────────────
   # 古いパッケージバージョンの掃除（週1）
   # ─────────────────────────────────────────────────
   cleanup:
