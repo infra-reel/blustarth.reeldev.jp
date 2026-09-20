@@ -28,20 +28,20 @@ spec:
     metadata:
       labels:
         app: backend
-      annotations:
+annotations:
         # Vault Agent Injector の有効化
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "bluestarth-role"
         # Vault から取得するパスと出力設定
         vault.hashicorp.com/agent-inject-secret-config: "secret/data/bluestarth"
         vault.hashicorp.com/agent-inject-path-config: "config"
-        # 環境変数形式（export KEY=VALUE）で出力するテンプレート
+        # 修正版テンプレート（index 関数を使用して安全にキーを参照）
         vault.hashicorp.com/agent-inject-template-config: |
           {{- with secret "secret/data/bluestarth" -}}
-          export JWT_SECRET="{{ .Data.data["jwt-secret"] }}"
-          export DISCORD_CLIENT_ID="{{ .Data.data["discord-client-id"] }}"
-          export DISCORD_CLIENT_SECRET="{{ .Data.data["discord-client-secret"] }}"
-          export DISCORD_ADMIN_IDS="{{ .Data.data["discord-admin-ids"] }}"
+          export JWT_SECRET="{{ index .Data.data "jwt-secret" }}"
+          export DISCORD_CLIENT_ID="{{ index .Data.data "discord-client-id" }}"
+          export DISCORD_CLIENT_SECRET="{{ index .Data.data "discord-client-secret" }}"
+          export DISCORD_ADMIN_IDS="{{ index .Data.data "discord-admin-ids" }}"
           {{- end -}}
     spec:
       nodeSelector:
