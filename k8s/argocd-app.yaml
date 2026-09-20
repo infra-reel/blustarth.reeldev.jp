@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: bluestarth
-  namespace: mgmt-system+
+  namespace: mgmt-system
 spec:
   project: bluestarth
   source:
