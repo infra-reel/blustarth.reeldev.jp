@@ -1,4 +1,3 @@
----
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -29,37 +28,34 @@ spec:
     metadata:
       labels:
         app: backend
+      annotations:
+        # Vault Agent Injector の有効化
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "bluestarth-role"
+        
+        # Vault から取得するパスと環境変数ファイルの生成設定
+        vault.hashicorp.com/agent-inject-secret-config: "secret/data/bluestarth"
+        vault.hashicorp.com/agent-inject-template-config: |
+          {{- with secret "secret/data/bluestarth" -}}
+          export JWT_SECRET="{{ .Data.data.jwt_secret }}"
+          export DISCORD_CLIENT_ID="{{ .Data.data.discord_client_id }}"
+          export DISCORD_CLIENT_SECRET="{{ .Data.data.discord_client_secret }}"
+          export DISCORD_ADMIN_IDS="{{ .Data.data.discord_admin_ids }}"
+          {{- end -}}
     spec:
       nodeSelector:
         tier: prod
       containers:
         - name: backend
           image: ghcr.io/YOUR_ORG/bluestarth-backend:latest
+          # Vault Agent が生成したスクリプトを読み込んでからアプリケーションを起動
+          command: ["/bin/sh", "-c"]
+          args: ["source /vault/custom-metadata/config && exec node server.js"]
           ports:
             - containerPort: 4000
           env:
             - name: DB_PATH
               value: /data/db.sqlite
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: bluestarth-secret
-                  key: jwt-secret
-            - name: DISCORD_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: bluestarth-secret
-                  key: discord-client-id
-            - name: DISCORD_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: bluestarth-secret
-                  key: discord-client-secret
-            - name: DISCORD_ADMIN_IDS
-              valueFrom:
-                secretKeyRef:
-                  name: bluestarth-secret
-                  key: discord-admin-ids
             - name: DISCORD_REDIRECT_URI
               value: "https://bluestarth.reeldev.jp/manage/callback"
           volumeMounts:
