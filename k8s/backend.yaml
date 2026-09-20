@@ -32,14 +32,16 @@ spec:
         # Vault Agent Injector の有効化
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "bluestarth-role"
-        # Vault から取得するパスと環境変数ファイルの生成設定
+        # Vault から取得するパスと出力設定
         vault.hashicorp.com/agent-inject-secret-config: "secret/data/bluestarth"
+        vault.hashicorp.com/agent-inject-path-config: "config"
+        # 環境変数形式（export KEY=VALUE）で出力するテンプレート
         vault.hashicorp.com/agent-inject-template-config: |
           {{- with secret "secret/data/bluestarth" -}}
-          export JWT_SECRET="{{ .Data.data.jwt_secret }}"
-          export DISCORD_CLIENT_ID="{{ .Data.data.discord_client_id }}"
-          export DISCORD_CLIENT_SECRET="{{ .Data.data.discord_client_secret }}"
-          export DISCORD_ADMIN_IDS="{{ .Data.data.discord_admin_ids }}"
+          export JWT_SECRET="{{ .Data.data["jwt-secret"] }}"
+          export DISCORD_CLIENT_ID="{{ .Data.data["discord-client-id"] }}"
+          export DISCORD_CLIENT_SECRET="{{ .Data.data["discord-client-secret"] }}"
+          export DISCORD_ADMIN_IDS="{{ .Data.data["discord-admin-ids"] }}"
           {{- end -}}
     spec:
       nodeSelector:
@@ -47,9 +49,13 @@ spec:
       containers:
         - name: backend
           image: ghcr.io/infra-reel/bluestarth-backend:latest
-          # Vault Agent が生成したスクリプトを読み込んでからアプリケーションを起動
+          # Vault Agent が /vault/secrets/config を生成するまで待機してから起動
           command: ["/bin/sh", "-c"]
-          args: ["source /vault/custom-metadata/config && exec node index.js"]
+          args:
+            - |
+              while [ ! -f /vault/secrets/config ]; do sleep 1; done
+              . /vault/secrets/config
+              exec node index.js
           ports:
             - containerPort: 4000
           env:
