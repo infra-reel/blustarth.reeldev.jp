@@ -28,7 +28,7 @@ spec:
     metadata:
       labels:
         app: backend
-annotations:
+      annotations:
         # Vault Agent Injector の有効化
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "bluestarth-role"
