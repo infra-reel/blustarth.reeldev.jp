@@ -14,7 +14,7 @@ export default async function LiveryPage() {
   return (
     <div className="circuit-bg min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-16">
-        <h1 className="font-heading font-700 text-4xl tracking-widest text-white mb-12">
+        <h1 className="font-heading font-bold text-4xl tracking-widest text-white mb-12">
           <span className="text-cyan">//</span> LIVERY
         </h1>
 
@@ -29,7 +29,7 @@ export default async function LiveryPage() {
                 )}
                 <div className="p-5">
                   <div className="flex items-start justify-between mb-2">
-                    <h2 className="font-heading font-700 text-xl text-white">{lv.name}</h2>
+                    <h2 className="font-heading font-bold text-xl text-white">{lv.name}</h2>
                     <span className="text-xs text-cyan font-body border border-cyan/30 px-2 py-0.5">{lv.year}</span>
                   </div>
                   {lv.member && (

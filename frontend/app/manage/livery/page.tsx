@@ -34,11 +34,11 @@ export default function ManageLivery() {
 
   return (
     <div>
-      <h1 className="font-heading font-700 text-2xl tracking-widest text-white mb-6">LIVERY 管理</h1>
+      <h1 className="font-heading font-bold text-2xl tracking-widest text-white mb-6">LIVERY 管理</h1>
       {msg && <p className="mb-4 text-cyan text-sm font-body">{msg}</p>}
 
       <form onSubmit={handleSubmit} className="bg-navy/40 border border-white/10 p-5 mb-8 space-y-3">
-        <h2 className="font-heading font-600 text-sm tracking-widest text-cyan">{editing ? '編集' : '新規追加'}</h2>
+        <h2 className="font-heading font-semibold text-sm tracking-widest text-cyan">{editing ? '編集' : '新規追加'}</h2>
         <input required className="input-field" placeholder="リバリー名" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
         <input required className="input-field" placeholder="年度 (例: 2026)" value={form.year} onChange={e => setForm(f => ({ ...f, year: e.target.value }))} />
         <select className="input-field" value={form.member} onChange={e => setForm(f => ({ ...f, member: e.target.value }))}>
@@ -57,7 +57,7 @@ export default function ManageLivery() {
         {items.map(item => (
           <div key={item.id} className="flex items-start justify-between gap-4 bg-navy/40 border border-white/5 p-4">
             <div className="flex-1 min-w-0">
-              <p className="font-heading font-600 text-white">{item.name}</p>
+              <p className="font-heading font-semibold text-white">{item.name}</p>
               <p className="text-xs text-gray-mid">{item.year}{item.member && ` / ${item.member}`}</p>
             </div>
             <div className="flex gap-2 flex-shrink-0">

@@ -27,11 +27,11 @@ export default function ManageMembers() {
 
   return (
     <div>
-      <h1 className="font-heading font-700 text-2xl tracking-widest text-white mb-6">MEMBERS 管理</h1>
+      <h1 className="font-heading font-bold text-2xl tracking-widest text-white mb-6">MEMBERS 管理</h1>
       {msg && <p className="mb-4 text-cyan text-sm">{msg}</p>}
 
       <form onSubmit={handleSubmit} className="bg-navy/40 border border-white/10 p-5 mb-8 space-y-3">
-        <h2 className="font-heading font-600 text-sm tracking-widest text-cyan">{editing ? '編集' : '新規追加'}</h2>
+        <h2 className="font-heading font-semibold text-sm tracking-widest text-cyan">{editing ? '編集' : '新規追加'}</h2>
         <input required className="input-field" placeholder="名前" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
         <input className="input-field" placeholder="役割（例: Driver, Mechanic）" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} />
         <textarea className="input-field h-20 resize-none" placeholder="紹介文（任意）" value={form.bio} onChange={e => setForm(f => ({ ...f, bio: e.target.value }))} />
@@ -46,7 +46,7 @@ export default function ManageMembers() {
         {items.map(m => (
           <div key={m.id} className="flex items-start justify-between gap-4 bg-navy/40 border border-white/5 p-4">
             <div className="flex-1 min-w-0">
-              <p className="font-heading font-600 text-white">{m.name}</p>
+              <p className="font-heading font-semibold text-white">{m.name}</p>
               <p className="text-xs text-cyan">{m.role}</p>
             </div>
             <div className="flex gap-2">

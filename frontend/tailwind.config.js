@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        base: '#0A0A0F',
+        site: '#0A0A0F',   // 旧: base（text-baseがTailwindのfont-sizeと衝突するため改名）
         navy: '#1A1A2E',
         cyan: '#00D4FF',
         red: '#FF2D55',

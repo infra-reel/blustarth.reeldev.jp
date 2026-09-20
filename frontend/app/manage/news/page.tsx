@@ -42,12 +42,12 @@ export default function ManageNews() {
 
   return (
     <div>
-      <h1 className="font-heading font-700 text-2xl tracking-widest text-white mb-6">NEWS 管理</h1>
+      <h1 className="font-heading font-bold text-2xl tracking-widest text-white mb-6">NEWS 管理</h1>
       {msg && <p className="mb-4 text-cyan text-sm font-body">{msg}</p>}
 
       {/* フォーム */}
       <form onSubmit={handleSubmit} className="bg-navy/40 border border-white/10 p-5 mb-8 space-y-3">
-        <h2 className="font-heading font-600 text-sm tracking-widest text-cyan">{editing ? '編集' : '新規追加'}</h2>
+        <h2 className="font-heading font-semibold text-sm tracking-widest text-cyan">{editing ? '編集' : '新規追加'}</h2>
         <input required className="input-field" placeholder="タイトル" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
         <textarea required className="input-field h-28 resize-none" placeholder="本文" value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} />
         <input className="input-field" placeholder="画像URL（任意）" value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} />
@@ -62,7 +62,7 @@ export default function ManageNews() {
         {items.map(item => (
           <div key={item.id} className="flex items-start justify-between gap-4 bg-navy/40 border border-white/5 p-4">
             <div className="flex-1 min-w-0">
-              <p className="font-heading font-600 text-white truncate">{item.title}</p>
+              <p className="font-heading font-semibold text-white truncate">{item.title}</p>
               <p className="text-xs text-gray-mid font-body mt-1">{new Date(item.created_at).toLocaleDateString('ja-JP')}</p>
             </div>
             <div className="flex gap-2 flex-shrink-0">

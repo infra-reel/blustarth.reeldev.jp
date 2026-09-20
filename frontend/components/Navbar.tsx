@@ -25,10 +25,10 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-base/90 backdrop-blur-md border-b border-white/10">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-site/90 backdrop-blur-md border-b border-white/10">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           {/* ロゴ */}
-          <Link href="/" className="font-heading font-700 text-xl tracking-widest text-white">
+          <Link href="/" className="font-heading font-bold text-xl tracking-widest text-white">
             <span className="text-cyan">BLUE</span>STERTH
           </Link>
 
@@ -38,7 +38,7 @@ export default function Navbar() {
               <Link
                 key={href}
                 href={href}
-                className={`nav-link font-heading font-600 text-sm tracking-widest ${
+                className={`nav-link font-heading font-semibold text-sm tracking-widest ${
                   pathname === href ? 'text-cyan active' : 'text-gray-light hover:text-white'
                 }`}
               >
@@ -73,7 +73,7 @@ export default function Navbar() {
             <Link
               key={href}
               href={href}
-              className={`font-heading font-600 text-lg tracking-widest py-3 border-b border-white/10 ${
+              className={`font-heading font-semibold text-lg tracking-widest py-3 border-b border-white/10 ${
                 pathname === href ? 'text-cyan' : 'text-gray-light'
               }`}
             >

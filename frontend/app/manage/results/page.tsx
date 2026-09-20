@@ -29,11 +29,11 @@ export default function ManageResults() {
 
   return (
     <div>
-      <h1 className="font-heading font-700 text-2xl tracking-widest text-white mb-6">RESULTS 管理</h1>
+      <h1 className="font-heading font-bold text-2xl tracking-widest text-white mb-6">RESULTS 管理</h1>
       {msg && <p className="mb-4 text-cyan text-sm">{msg}</p>}
 
       <form onSubmit={handleSubmit} className="bg-navy/40 border border-white/10 p-5 mb-8 space-y-3">
-        <h2 className="font-heading font-600 text-sm tracking-widest text-cyan">{editing ? '編集' : '新規追加'}</h2>
+        <h2 className="font-heading font-semibold text-sm tracking-widest text-cyan">{editing ? '編集' : '新規追加'}</h2>
         <div className="grid grid-cols-2 gap-3">
           <input required type="date" className="input-field" value={form.date} onChange={f('date')} />
           <input required className="input-field" placeholder="イベント名" value={form.event} onChange={f('event')} />
@@ -52,7 +52,7 @@ export default function ManageResults() {
         <table className="w-full text-sm font-body">
           <thead><tr className="border-b border-white/10">
             {['日付','イベント','サーキット','クラス','順位','ドライバー','操作'].map(h => (
-              <th key={h} className="text-left py-2 px-2 text-xs text-cyan font-heading font-600 tracking-widest">{h}</th>
+              <th key={h} className="text-left py-2 px-2 text-xs text-cyan font-heading font-semibold tracking-widest">{h}</th>
             ))}
           </tr></thead>
           <tbody>
@@ -62,7 +62,7 @@ export default function ManageResults() {
                 <td className="py-2 px-2 text-gray-light">{r.event}</td>
                 <td className="py-2 px-2 text-gray-mid">{r.circuit}</td>
                 <td className="py-2 px-2 text-gray-mid">{r.class}</td>
-                <td className="py-2 px-2 text-white font-heading font-700">{r.position ? `P${r.position}` : '-'}</td>
+                <td className="py-2 px-2 text-white font-heading font-bold">{r.position ? `P${r.position}` : '-'}</td>
                 <td className="py-2 px-2 text-gray-light">{r.driver}</td>
                 <td className="py-2 px-2"><div className="flex gap-2">
                   <button onClick={() => startEdit(r)} className="btn-ghost text-xs">編集</button>

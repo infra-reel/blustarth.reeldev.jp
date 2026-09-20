@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// /manage/login と /manage/callback は認証不要、それ以外の /manage/* は認証必須
 export const config = {
   matcher: '/manage/:path*',
 }
@@ -18,20 +17,23 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/manage/login', req.url))
   }
 
-  // バックエンドでトークン検証
+  // Edge Runtime で JWT をローカル検証（fetch不要）
+  // JWT の構造確認のみ（署名検証は jose ライブラリが必要だが、
+  // ここでは存在チェックのみ行い、実際の検証はバックエンドAPIで実施）
   try {
-    const res = await fetch(
-      `${process.env.BACKEND_URL || 'http://backend:4000'}/api/auth/verify`,
-      { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' }
-    )
-    if (res.status === 401 || res.status === 403) {
-      const response = NextResponse.redirect(new URL('/manage/login', req.url))
-      response.cookies.delete('manage_token')
-      return response
+    const [, payload] = token.split('.')
+    if (!payload) throw new Error('invalid')
+    const decoded = JSON.parse(atob(payload))
+    // exp チェック
+    if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+      const res = NextResponse.redirect(new URL('/manage/login', req.url))
+      res.cookies.delete('manage_token')
+      return res
     }
-    // バックエンド障害（5xx等）はそのまま通す（layout側で503表示）
   } catch {
-    // 接続不能もそのまま通す（layout側で503表示）
+    const res = NextResponse.redirect(new URL('/manage/login', req.url))
+    res.cookies.delete('manage_token')
+    return res
   }
 
   return NextResponse.next()

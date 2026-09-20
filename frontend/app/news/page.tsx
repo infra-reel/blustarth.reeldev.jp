@@ -14,7 +14,7 @@ export default async function NewsPage() {
   return (
     <div className="circuit-bg min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-16">
-        <h1 className="font-heading font-700 text-4xl tracking-widest text-white mb-12">
+        <h1 className="font-heading font-bold text-4xl tracking-widest text-white mb-12">
           <span className="text-cyan">//</span> NEWS
         </h1>
 
@@ -28,7 +28,7 @@ export default async function NewsPage() {
                 <p className="text-xs text-cyan font-body mb-1">
                   {new Date(item.created_at).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
-                <h2 className="font-heading font-600 text-xl text-white mb-3">{item.title}</h2>
+                <h2 className="font-heading font-semibold text-xl text-white mb-3">{item.title}</h2>
                 {item.image_url && (
                   <img src={item.image_url} alt={item.title} className="w-full max-h-64 object-cover mb-3 border border-white/10" />
                 )}

@@ -14,7 +14,7 @@ export default async function ResultsPage() {
   return (
     <div className="circuit-bg min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-16">
-        <h1 className="font-heading font-700 text-4xl tracking-widest text-white mb-12">
+        <h1 className="font-heading font-bold text-4xl tracking-widest text-white mb-12">
           <span className="text-cyan">//</span> RESULTS
         </h1>
 
@@ -26,7 +26,7 @@ export default async function ResultsPage() {
               <thead>
                 <tr className="border-b border-cyan/30">
                   {['DATE', 'EVENT', 'CIRCUIT', 'CLASS', 'POS', 'DRIVER'].map(h => (
-                    <th key={h} className="text-left py-3 px-3 font-heading font-600 text-xs tracking-widest text-cyan">{h}</th>
+                    <th key={h} className="text-left py-3 px-3 font-heading font-semibold text-xs tracking-widest text-cyan">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -38,7 +38,7 @@ export default async function ResultsPage() {
                     <td className="py-3 px-3 text-gray-mid">{r.circuit}</td>
                     <td className="py-3 px-3 text-gray-mid">{r.class}</td>
                     <td className="py-3 px-3">
-                      <span className={`font-heading font-700 text-lg ${r.position === 1 ? 'text-cyan' : r.position <= 3 ? 'text-yellow-400' : 'text-gray-light'}`}>
+                      <span className={`font-heading font-bold text-lg ${r.position === 1 ? 'text-cyan' : r.position <= 3 ? 'text-yellow-400' : 'text-gray-light'}`}>
                         {r.position ? `P${r.position}` : '-'}
                       </span>
                     </td>

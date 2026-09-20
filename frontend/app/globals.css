@@ -75,18 +75,14 @@ body {
 
 /* 管理画面フォーム・ボタン */
 .input-field {
-  @apply w-full bg-black/40 border border-white/10 text-gray-200 text-sm px-3 py-2
-         focus:outline-none focus:border-[var(--cyan)] transition-colors;
+  @apply w-full bg-site border border-white/10 text-gray-light text-sm px-3 py-2
+         focus:outline-none focus:border-cyan/50 transition-colors;
 }
 .btn-primary {
-  @apply font-semibold text-sm tracking-widest px-5 py-2 text-black transition-colors cursor-pointer;
-  background-color: var(--cyan);
+  @apply font-heading font-semibold text-sm tracking-widest px-5 py-2 bg-cyan text-site
+         hover:bg-white hover:text-site transition-colors cursor-pointer;
 }
-.btn-primary:hover {
-  background-color: #ffffff;
-}
-
 .btn-ghost {
-  @apply font-semibold text-xs tracking-widest px-4 py-2 border border-white/20 text-gray-300
-         hover:border-[var(--cyan)] hover:text-white transition-colors cursor-pointer;
+  @apply font-heading font-semibold text-xs tracking-widest px-4 py-2 border border-white/20 text-gray-mid
+         hover:border-cyan/50 hover:text-white transition-colors cursor-pointer;
 }

@@ -28,11 +28,11 @@ export default function ManageLinks() {
 
   return (
     <div>
-      <h1 className="font-heading font-700 text-2xl tracking-widest text-white mb-6">SNS LINKS 管理</h1>
+      <h1 className="font-heading font-bold text-2xl tracking-widest text-white mb-6">SNS LINKS 管理</h1>
       {msg && <p className="mb-4 text-cyan text-sm">{msg}</p>}
 
       <form onSubmit={handleSubmit} className="bg-navy/40 border border-white/10 p-5 mb-8 space-y-3">
-        <h2 className="font-heading font-600 text-sm tracking-widest text-cyan">{editing ? '編集' : '新規追加'}</h2>
+        <h2 className="font-heading font-semibold text-sm tracking-widest text-cyan">{editing ? '編集' : '新規追加'}</h2>
         <select className="input-field" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
           {TYPES.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
@@ -50,7 +50,7 @@ export default function ManageLinks() {
           <div key={l.id} className="flex items-center justify-between gap-4 bg-navy/40 border border-white/5 p-4">
             <div>
               <span className="text-xs text-cyan font-heading tracking-widest mr-3">{l.type}</span>
-              <span className="text-white font-heading font-600">{l.label}</span>
+              <span className="text-white font-heading font-semibold">{l.label}</span>
               <p className="text-xs text-gray-mid truncate max-w-xs">{l.url}</p>
             </div>
             <div className="flex gap-2">
