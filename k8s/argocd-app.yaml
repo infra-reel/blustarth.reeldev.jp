@@ -2,11 +2,11 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: bluestarth
-  namespace: argocd
+  namespace: mgmt-system+
 spec:
-  project: default
+  project: bluestarth
   source:
-    repoURL: https://github.com/YOUR_ORG/bluestarth.git
+    repoURL: https://github.com/infra-reel/blustarth.reeldev.jp.git
     targetRevision: main
     path: k8s
   destination:
