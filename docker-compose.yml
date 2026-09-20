@@ -1,0 +1,23 @@
+services:
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend/data:/data
+    environment:
+      DB_PATH: /data/db.sqlite
+      JWT_SECRET: local-dev-secret
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-}
+      DISCORD_ADMIN_IDS: ${DISCORD_ADMIN_IDS:-}
+      DISCORD_REDIRECT_URI: http://localhost:3000/manage/callback
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build: ./frontend
+    environment:
+      BACKEND_URL: http://backend:4000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

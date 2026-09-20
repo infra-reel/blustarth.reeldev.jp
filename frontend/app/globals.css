@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cyan: #00D4FF;
+  --red: #FF2D55;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: #0A0A0F;
+  color: #E8E8E8;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* サーキットグリッドライン背景 */
+.circuit-bg {
+  background-image:
+    linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* アクセントライン */
+.accent-line {
+  position: relative;
+}
+.accent-line::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--cyan);
+}
+
+/* ナビ下ライン */
+.nav-link {
+  position: relative;
+  transition: color 0.2s;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0; right: 0;
+  height: 2px;
+  background: var(--cyan);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+.nav-link:hover::after,
+.nav-link.active::after { transform: scaleX(1); }
+
+/* スクロールバー */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #0A0A0F; }
+::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 2px; }
+
+/* モバイルメニュー */
+.mobile-menu {
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mobile-menu.open {
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, .mobile-menu { transition: none !important; }
+}
+
+/* 管理画面フォーム・ボタン */
+.input-field {
+  @apply w-full bg-base border border-white/10 text-gray-light text-sm px-3 py-2
+         focus:outline-none focus:border-cyan/50 transition-colors;
+}
+.btn-primary {
+  @apply font-heading font-600 text-sm tracking-widest px-5 py-2 bg-cyan text-base
+         hover:bg-white transition-colors cursor-pointer;
+}
+.btn-ghost {
+  @apply font-heading font-600 text-xs tracking-widest px-4 py-2 border border-white/20 text-gray-mid
+         hover:border-cyan/50 hover:text-white transition-colors cursor-pointer;
+}

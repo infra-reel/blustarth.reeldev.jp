@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bluestarth
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backend-data
+  namespace: bluestarth
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: bluestarth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      nodeSelector:
+        tier: prod
+      containers:
+        - name: backend
+          image: ghcr.io/YOUR_ORG/bluestarth-backend:latest
+          ports:
+            - containerPort: 4000
+          env:
+            - name: DB_PATH
+              value: /data/db.sqlite
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: bluestarth-secret
+                  key: jwt-secret
+            - name: DISCORD_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: bluestarth-secret
+                  key: discord-client-id
+            - name: DISCORD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: bluestarth-secret
+                  key: discord-client-secret
+            - name: DISCORD_ADMIN_IDS
+              valueFrom:
+                secretKeyRef:
+                  name: bluestarth-secret
+                  key: discord-admin-ids
+            - name: DISCORD_REDIRECT_URI
+              value: "https://bluestarth.reeldev.jp/manage/callback"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: backend-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: bluestarth
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 4000
+      targetPort: 4000
