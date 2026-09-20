@@ -47,7 +47,7 @@ spec:
         tier: prod
       containers:
         - name: backend
-          image: ghcr.io/YOUR_ORG/bluestarth-backend:latest
+          image: image: ghcr.io/infra-reel/bluestarth-backend:latest
           # Vault Agent が生成したスクリプトを読み込んでからアプリケーションを起動
           command: ["/bin/sh", "-c"]
           args: ["source /vault/custom-metadata/config && exec node server.js"]
