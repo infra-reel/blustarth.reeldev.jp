@@ -10,7 +10,7 @@ metadata:
   name: backend-data
   namespace: bluestarth
 spec:
-  accessModes: [ReadWriteMany]
+  accessModes: [ReadWriteOnce]
   resources:
     requests:
       storage: 1Gi
