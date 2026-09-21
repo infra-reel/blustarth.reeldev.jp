@@ -1,4 +1,5 @@
 'use client'
+import { authFetch } from '@/lib/authFetch'
 import { useState, useEffect } from 'react'
 
 type Livery = { id: number; name: string; year: string; member: string; description: string; image_url: string }
@@ -14,8 +15,8 @@ export default function ManageLivery() {
   const [msg, setMsg] = useState('')
 
   const load = () => {
-    fetch('/api/liveries').then(r => r.json()).then(setItems).catch(() => {})
-    fetch('/api/members').then(r => r.json()).then(setMembers).catch(() => {})
+    authFetch('/api/liveries').then(r => r.json()).then(setItems).catch(() => {})
+    authFetch('/api/members').then(r => r.json()).then(setMembers).catch(() => {})
   }
   useEffect(() => { load() }, [])
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(''), 3000) }
@@ -24,13 +25,13 @@ export default function ManageLivery() {
     e.preventDefault()
     const method = editing ? 'PUT' : 'POST'
     const url = editing ? `/api/liveries/${editing}` : '/api/liveries'
-    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+    const res = await authFetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
     if (res.ok) { flash(editing ? '更新しました' : '追加しました'); setForm(emptyForm); setEditing(null); load() }
     else flash('エラーが発生しました')
   }
 
   const startEdit = (item: Livery) => { setEditing(item.id); setForm({ name: item.name, year: item.year, member: item.member || '', description: item.description || '', image_url: item.image_url || '' }) }
-  const del = async (id: number) => { if (!confirm('削除しますか？')) return; await fetch(`/api/liveries/${id}`, { method: 'DELETE' }); load() }
+  const del = async (id: number) => { if (!confirm('削除しますか？')) return; await authFetch(`/api/liveries/${id}`, { method: 'DELETE' }); load() }
 
   return (
     <div>
