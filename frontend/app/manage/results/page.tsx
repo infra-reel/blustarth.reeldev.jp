@@ -1,4 +1,5 @@
 'use client'
+import { authFetch } from '@/lib/authFetch'
 import { useState, useEffect } from 'react'
 
 type Result = { id: number; date: string; event: string; circuit: string; class: string; position: number; driver: string }
@@ -11,7 +12,7 @@ export default function ManageResults() {
   const [editing, setEditing] = useState<number | null>(null)
   const [msg, setMsg] = useState('')
 
-  const load = () => fetch('/api/results').then(r => r.json()).then(setItems).catch(() => {})
+  const load = () => authFetch('/api/results').then(r => r.json()).then(setItems).catch(() => {})
   useEffect(() => { load() }, [])
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(''), 3000) }
   const f = (k: keyof typeof emptyForm) => (e: React.ChangeEvent<HTMLInputElement>) => setForm(p => ({ ...p, [k]: e.target.value }))
@@ -19,13 +20,13 @@ export default function ManageResults() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const url = editing ? `/api/results/${editing}` : '/api/results'
-    const res = await fetch(url, { method: editing ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+    const res = await authFetch(url, { method: editing ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
     if (res.ok) { flash(editing ? '更新しました' : '追加しました'); setForm(emptyForm); setEditing(null); load() }
     else flash('エラー')
   }
 
   const startEdit = (r: Result) => { setEditing(r.id); setForm({ date: r.date?.slice(0,10) || '', event: r.event, circuit: r.circuit, class: r.class || '', position: String(r.position || ''), driver: r.driver }) }
-  const del = async (id: number) => { if (!confirm('削除しますか？')) return; await fetch(`/api/results/${id}`, { method: 'DELETE' }); load() }
+  const del = async (id: number) => { if (!confirm('削除しますか？')) return; await authFetch(`/api/results/${id}`, { method: 'DELETE' }); load() }
 
   return (
     <div>
