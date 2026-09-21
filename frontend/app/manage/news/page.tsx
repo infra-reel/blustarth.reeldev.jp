@@ -1,4 +1,5 @@
 'use client'
+import { authFetch } from '@/lib/authFetch'
 import { useState, useEffect } from 'react'
 
 type NewsItem = { id: number; title: string; body: string; image_url: string; created_at: string }
@@ -12,7 +13,7 @@ export default function ManageNews() {
   const [editing, setEditing] = useState<number | null>(null)
   const [msg, setMsg] = useState('')
 
-  const load = () => fetch(API).then(r => r.json()).then(setItems).catch(() => {})
+  const load = () => authFetch(API).then(r => r.json()).then(setItems).catch(() => {})
   useEffect(() => { load() }, [])
 
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(''), 3000) }
@@ -21,7 +22,7 @@ export default function ManageNews() {
     e.preventDefault()
     const method = editing ? 'PUT' : 'POST'
     const url = editing ? `${API}/${editing}` : API
-    const res = await fetch(url, {
+    const res = await authFetch(url, {
       method, headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     })
@@ -36,7 +37,7 @@ export default function ManageNews() {
 
   const del = async (id: number) => {
     if (!confirm('削除しますか？')) return
-    await fetch(`${API}/${id}`, { method: 'DELETE' })
+    await authFetch(`${API}/${id}`, { method: 'DELETE' })
     load()
   }
 
