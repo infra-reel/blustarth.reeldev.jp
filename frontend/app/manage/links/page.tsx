@@ -1,4 +1,5 @@
 'use client'
+import { authFetch } from '@/lib/authFetch'
 import { useState, useEffect } from 'react'
 
 type Link = { id: number; type: string; label: string; url: string; description: string }
@@ -11,20 +12,20 @@ export default function ManageLinks() {
   const [editing, setEditing] = useState<number | null>(null)
   const [msg, setMsg] = useState('')
 
-  const load = () => fetch('/api/links').then(r => r.json()).then(setItems).catch(() => {})
+  const load = () => authFetch('/api/links').then(r => r.json()).then(setItems).catch(() => {})
   useEffect(() => { load() }, [])
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(''), 3000) }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const url = editing ? `/api/links/${editing}` : '/api/links'
-    const res = await fetch(url, { method: editing ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+    const res = await authFetch(url, { method: editing ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
     if (res.ok) { flash(editing ? '更新しました' : '追加しました'); setForm(emptyForm); setEditing(null); load() }
     else flash('エラー')
   }
 
   const startEdit = (l: Link) => { setEditing(l.id); setForm({ type: l.type, label: l.label, url: l.url, description: l.description || '' }) }
-  const del = async (id: number) => { if (!confirm('削除しますか？')) return; await fetch(`/api/links/${id}`, { method: 'DELETE' }); load() }
+  const del = async (id: number) => { if (!confirm('削除しますか？')) return; await authFetch(`/api/links/${id}`, { method: 'DELETE' }); load() }
 
   return (
     <div>
