@@ -9,9 +9,10 @@
   },
   "dependencies": {
     "express": "^4.19.2",
-    "better-sqlite3": "^11.1.2",
+    "better-sqlite3": "^9.4.3",
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "^3.3.2",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "multer": "^2.0.0"
   }
 }
