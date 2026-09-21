@@ -41,10 +41,10 @@ spec:
         vault.hashicorp.com/agent-inject-secret-app.env: "secret/data/bluestarth/app"
         vault.hashicorp.com/agent-inject-template-app.env: |
           {{- with secret "secret/data/bluestarth/app" -}}
-          export JWT_SECRET="{{ .Data.data.jwt-secret }}"
-          export DISCORD_CLIENT_ID="{{ .Data.data.discord-client-id }}"
-          export DISCORD_CLIENT_SECRET="{{ .Data.data.discord-client-secret }}"
-          export DISCORD_ADMIN_IDS="{{ .Data.data.discord-admin-ids }}"
+          export JWT_SECRET="{{ index .Data.data "jwt-secret" }}"
+          export DISCORD_CLIENT_ID="{{ index .Data.data "discord-client-id" }}"
+          export DISCORD_CLIENT_SECRET="{{ index .Data.data "discord-client-secret" }}"
+          export DISCORD_ADMIN_IDS="{{ index .Data.data "discord-admin-ids" }}"
           {{- end }}
         vault.hashicorp.com/agent-pre-populate-only: "false"
         vault.hashicorp.com/agent-cache-enable: "true"
@@ -57,7 +57,6 @@ spec:
           image: ghcr.io/infra-reel/bluestarth-backend:latest
           ports:
             - containerPort: 4000
-          # Vault Agent が /vault/secrets/app.env を書き終わるまで待ってから起動
           command:
             - /bin/sh
             - -c
