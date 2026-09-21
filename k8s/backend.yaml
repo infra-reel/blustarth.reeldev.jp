@@ -34,10 +34,10 @@ spec:
   template:
     metadata:
       labels:
-        app: backendannotations:
+        app: backend
+      annotations:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "bluestarth-role"
-        # secret/data/ ではなく secret/bluestarth に修正
         vault.hashicorp.com/agent-inject-secret-app.env: "secret/bluestarth"
         vault.hashicorp.com/agent-inject-template-app.env: |
           {{- with secret "secret/bluestarth" -}}
