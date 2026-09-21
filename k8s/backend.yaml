@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -14,6 +15,13 @@ spec:
     requests:
       storage: 1Gi
 ---
+# Vault Agent が Kubernetes SA トークンで認証するための ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bluestarth-backend
+  namespace: bluestarth
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,47 +37,60 @@ spec:
       labels:
         app: backend
       annotations:
-        # Vault Agent Injector の有効化
+        # ── Vault Agent Injector アノテーション ──────────────────
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "bluestarth-role"
-        # Vault から取得するパスと出力設定
-        vault.hashicorp.com/agent-inject-secret-config: "secret/data/bluestarth"
-        vault.hashicorp.com/agent-inject-path-config: "config"
-        # 修正版テンプレート（index 関数を使用して安全にキーを参照）
-        vault.hashicorp.com/agent-inject-template-config: |
-          {{- with secret "secret/data/bluestarth" -}}
-          export JWT_SECRET="{{ index .Data.data "jwt-secret" }}"
-          export DISCORD_CLIENT_ID="{{ index .Data.data "discord-client-id" }}"
-          export DISCORD_CLIENT_SECRET="{{ index .Data.data "discord-client-secret" }}"
-          export DISCORD_ADMIN_IDS="{{ index .Data.data "discord-admin-ids" }}"
-          {{- end -}}
+
+        # /vault/secrets/app.env として注入
+        # シェル export 形式で書き出す → envFrom でソース可能
+        vault.hashicorp.com/agent-inject-secret-app.env: "secret/data/bluestarth/app"
+        vault.hashicorp.com/agent-inject-template-app.env: |
+          {{- with secret "secret/data/bluestarth/app" -}}
+          export JWT_SECRET="{{ .Data.data.jwt-secret }}"
+          export DISCORD_CLIENT_ID="{{ .Data.data.discord-client-id }}"
+          export DISCORD_CLIENT_SECRET="{{ .Data.data.discord-client-secret }}"
+          export DISCORD_ADMIN_IDS="{{ .Data.data.discord-admin-ids }}"
+          {{- end }}
+
+        # init コンテナで1回取得後にキャッシュ（Podが起動すれば Vault 障害に耐性）
+        vault.hashicorp.com/agent-pre-populate-only: "false"
+        vault.hashicorp.com/agent-cache-enable: "true"
     spec:
+      serviceAccountName: bluestarth-backend
       nodeSelector:
         tier: prod
+      initContainers:
+        # シークレットをロードしてから本体を起動するためのラッパー
+        - name: env-loader
+          image: busybox:1.36
+          command: ["/bin/sh", "-c", "cp /vault/secrets/app.env /shared/app.env"]
+          volumeMounts:
+            - name: shared-env
+              mountPath: /shared
       containers:
         - name: backend
-          image: ghcr.io/infra-reel/bluestarth-backend:latest
-          # Vault Agent が /vault/secrets/config を生成するまで待機してから起動
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              while [ ! -f /vault/secrets/config ]; do sleep 1; done
-              . /vault/secrets/config
-              exec node index.js
+          image: ghcr.io/YOUR_ORG/bluestarth-backend:latest
           ports:
             - containerPort: 4000
+          command: ["/bin/sh", "-c", ". /shared/app.env && node index.js"]
           env:
             - name: DB_PATH
               value: /data/db.sqlite
+            - name: UPLOAD_DIR
+              value: /data/uploads
             - name: DISCORD_REDIRECT_URI
               value: "https://bluestarth.reeldev.jp/manage/callback"
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: shared-env
+              mountPath: /shared
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: backend-data
+        - name: shared-env
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
