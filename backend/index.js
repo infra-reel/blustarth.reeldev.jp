@@ -4,6 +4,8 @@ const Database = require('better-sqlite3')
 const jwt = require('jsonwebtoken')
 const cors = require('cors')
 const path = require('path')
+const fs = require('fs')
+const multer = require('multer')
 
 const app = express()
 const PORT = process.env.PORT || 4000
@@ -11,12 +13,11 @@ const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production'
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID || ''
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET || ''
 const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI || 'https://bluestarth.reeldev.jp/manage/callback'
-// 管理者のDiscord UserIDをカンマ区切りで設定
 const ADMIN_IDS = (process.env.DISCORD_ADMIN_IDS || '').split(',').map(s => s.trim()).filter(Boolean)
 
-// DB初期化（/data は PVC マウントポイント）
+// DB
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'data', 'db.sqlite')
-require('fs').mkdirSync(path.dirname(DB_PATH), { recursive: true })
+fs.mkdirSync(path.dirname(DB_PATH), { recursive: true })
 const db = new Database(DB_PATH)
 db.pragma('journal_mode = WAL')
 
@@ -61,8 +62,31 @@ db.exec(`
   );
 `)
 
+// 画像アップロード先（PVCマウント）
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'data', 'uploads')
+fs.mkdirSync(UPLOAD_DIR, { recursive: true })
+
+const storage = multer.diskStorage({
+  destination: UPLOAD_DIR,
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname)
+    cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`)
+  },
+})
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) cb(null, true)
+    else cb(new Error('Images only'))
+  },
+})
+
 app.use(cors({ origin: true, credentials: true }))
 app.use(express.json())
+
+// 画像を /uploads/* として配信
+app.use('/uploads', express.static(UPLOAD_DIR))
 
 // ─── Auth middleware ───────────────────────────────────
 function requireAuth(req, res, next) {
@@ -76,6 +100,14 @@ function requireAuth(req, res, next) {
     res.status(401).json({ error: 'Invalid token' })
   }
 }
+
+// ─── 画像アップロード ──────────────────────────────────
+app.post('/api/upload', requireAuth, upload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file' })
+  // フロントからアクセスできる公開URLを返す
+  const publicUrl = `/uploads/${req.file.filename}`
+  res.json({ url: publicUrl })
+})
 
 // ─── Auth routes ──────────────────────────────────────
 app.get('/api/auth/discord', (_req, res) => {
@@ -93,7 +125,6 @@ app.get('/api/auth/discord/callback', async (req, res) => {
   if (!code) return res.status(400).json({ error: 'No code' })
   try {
     const { default: fetch } = await import('node-fetch')
-    // トークン取得
     const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -108,7 +139,6 @@ app.get('/api/auth/discord/callback', async (req, res) => {
     const tokenData = await tokenRes.json()
     if (!tokenData.access_token) return res.status(401).json({ error: 'Discord auth failed' })
 
-    // ユーザー情報取得
     const userRes = await fetch('https://discord.com/api/users/@me', {
       headers: { Authorization: `Bearer ${tokenData.access_token}` },
     })
@@ -120,7 +150,7 @@ app.get('/api/auth/discord/callback', async (req, res) => {
 
     const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' })
     res.json({ token })
-  } catch (e) {
+  } catch {
     res.status(500).json({ error: 'Internal error' })
   }
 })
@@ -131,26 +161,23 @@ app.get('/api/auth/logout', (_req, res) => {
   res.redirect('/')
 })
 
-// ─── CRUD ヘルパー ─────────────────────────────────────
+// ─── CRUD helper ──────────────────────────────────────
 function crud(router, table, fields) {
   router.get(`/api/${table}`, (req, res) => {
     const limit = req.query.limit ? parseInt(req.query.limit) : undefined
-    let stmt = db.prepare(`SELECT * FROM ${table} ORDER BY id DESC${limit ? ' LIMIT ?' : ''}`)
+    const stmt = db.prepare(`SELECT * FROM ${table} ORDER BY id DESC${limit ? ' LIMIT ?' : ''}`)
     res.json(limit ? stmt.all(limit) : stmt.all())
   })
-
   router.get(`/api/${table}/:id`, (req, res) => {
     const row = db.prepare(`SELECT * FROM ${table} WHERE id = ?`).get(req.params.id)
     row ? res.json(row) : res.status(404).json({ error: 'Not found' })
   })
-
   router.post(`/api/${table}`, requireAuth, (req, res) => {
     const cols = fields.filter(f => req.body[f] !== undefined)
     const stmt = db.prepare(`INSERT INTO ${table} (${cols.join(',')}) VALUES (${cols.map(() => '?').join(',')})`)
     const info = stmt.run(...cols.map(f => req.body[f]))
     res.json({ id: info.lastInsertRowid })
   })
-
   router.put(`/api/${table}/:id`, requireAuth, (req, res) => {
     const cols = fields.filter(f => req.body[f] !== undefined)
     if (!cols.length) return res.status(400).json({ error: 'No fields' })
@@ -158,7 +185,6 @@ function crud(router, table, fields) {
     stmt.run(...cols.map(f => req.body[f]), req.params.id)
     res.json({ ok: true })
   })
-
   router.delete(`/api/${table}/:id`, requireAuth, (req, res) => {
     db.prepare(`DELETE FROM ${table} WHERE id=?`).run(req.params.id)
     res.json({ ok: true })
