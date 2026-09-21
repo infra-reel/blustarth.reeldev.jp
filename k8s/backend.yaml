@@ -34,13 +34,13 @@ spec:
   template:
     metadata:
       labels:
-        app: backend
-      annotations:
+        app: backendannotations:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "bluestarth-role"
-        vault.hashicorp.com/agent-inject-secret-app.env: "secret/data/bluestarth/app"
+        # secret/data/ ではなく secret/bluestarth に修正
+        vault.hashicorp.com/agent-inject-secret-app.env: "secret/bluestarth"
         vault.hashicorp.com/agent-inject-template-app.env: |
-          {{- with secret "secret/data/bluestarth/app" -}}
+          {{- with secret "secret/bluestarth" -}}
           export JWT_SECRET="{{ index .Data.data "jwt-secret" }}"
           export DISCORD_CLIENT_ID="{{ index .Data.data "discord-client-id" }}"
           export DISCORD_CLIENT_SECRET="{{ index .Data.data "discord-client-secret" }}"
