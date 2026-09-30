@@ -27,9 +27,9 @@ export default async function AboutPage() {
           </div>
           <dl className="mt-6 grid grid-cols-2 gap-4 text-sm font-body">
             {[
-              ['チーム名', 'BLUESTERTH Racing'],
-              ['活動地域', '日本各地'],
-              ['設立', '2024'],
+              ['チーム名', 'BLUESTER Racing'],
+              ['活動地域', 'Granturismo7'],
+              ['設立', '2026'],
             ].map(([k, v]) => (
               <div key={k}>
                 <dt className="text-gray-mid text-xs mb-1">{k}</dt>
