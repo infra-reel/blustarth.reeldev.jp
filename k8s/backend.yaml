@@ -15,6 +15,20 @@ spec:
     path: /export/k8s/pvc/bluestarth/backend-data
 ---
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backend-data
+  namespace: bluestarth
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: bluestarth-nfs
+  volumeName: bluestarth-backend-data-pv
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: bluestarth-backend
