@@ -21,6 +21,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: backend-data
   namespace: bluestarth
+  labels:
+    capsule.clastix.io/tenant: prod
 spec:
   accessModes:
     - ReadWriteOnce
