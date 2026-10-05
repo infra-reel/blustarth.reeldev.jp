@@ -3,8 +3,11 @@ kind: Ingress
 metadata:
   name: bluestarth-ingress
   namespace: bluestarth
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
+
   rules:
     - host: bluestarth.reeldev.jp
       http:
@@ -30,6 +33,7 @@ spec:
                 name: frontend
                 port:
                   number: 3000
+
   tls:
     - hosts:
         - bluestarth.reeldev.jp
