@@ -3,6 +3,9 @@ kind: Application
 metadata:
   name: bluestarth
   namespace: argocd
+  labels:
+    capsule.clastix.io/managed-by: prod
+    projectcapsule.dev/tenant: prod
 spec:
   project: bluestarth
   source:
@@ -13,6 +16,9 @@ spec:
     server: https://kubernetes.default.svc
     namespace: bluestarth
   syncPolicy:
+    managedNamespaceMetadata:
+      labels:
+        capsule.clastix.io/tenant: prod
     automated:
       prune: true
       selfHeal: true
