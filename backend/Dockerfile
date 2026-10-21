@@ -1,4 +1,5 @@
-FROM node:20-alpine
+#脆弱性CVE-2026-106069 etc...
+FROM node:26.12.1-alpine
 WORKDIR /app
 RUN apk add --no-cache python3 make g++
 COPY package.json ./
