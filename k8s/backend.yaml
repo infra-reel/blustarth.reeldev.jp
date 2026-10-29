@@ -67,8 +67,6 @@ spec:
         vault.hashicorp.com/agent-cache-enable: "true"
     spec:
       serviceAccountName: bluestarth-backend
-      nodeSelector:
-        tier: prod
       containers:
         - name: backend
           image: ghcr.io/infra-reel/bluestarth-backend:latest
