@@ -14,13 +14,18 @@ spec:
       labels:
         app: frontend
     spec:
-      nodeSelector:
-        tier: prod
       containers:
         - name: frontend
           image: ghcr.io/infra-reel/bluestarth-frontend:latest
           ports:
             - containerPort: 3000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
           env:
             - name: BACKEND_URL
               value: "http://backend.bluestarth.svc.cluster.local:4000"
