@@ -1,3 +1,35 @@
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bluestarth-secret
+  namespace: bluestarth
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: bluestarth-secret
+    creationPolicy: Owner
+  data:
+    - secretKey: JWT_SECRET
+      remoteRef:
+        key: secret/bluestarth
+        property: jwt-secret
+    - secretKey: DISCORD_CLIENT_ID
+      remoteRef:
+        key: secret/bluestarth
+        property: discord-client-id
+    - secretKey: DISCORD_CLIENT_SECRET
+      remoteRef:
+        key: secret/bluestarth
+        property: discord-client-secret
+    - secretKey: DISCORD_ADMIN_IDS
+      remoteRef:
+        key: secret/bluestarth
+        property: discord-admin-ids
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -52,19 +84,6 @@ spec:
     metadata:
       labels:
         app: backend
-      annotations:
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/role: "bluestarth-role"
-        vault.hashicorp.com/agent-inject-secret-app.env: "secret/bluestarth"
-        vault.hashicorp.com/agent-inject-template-app.env: |
-          {{- with secret "secret/bluestarth" -}}
-          export JWT_SECRET="{{ index .Data.data "jwt-secret" }}"
-          export DISCORD_CLIENT_ID="{{ index .Data.data "discord-client-id" }}"
-          export DISCORD_CLIENT_SECRET="{{ index .Data.data "discord-client-secret" }}"
-          export DISCORD_ADMIN_IDS="{{ index .Data.data "discord-admin-ids" }}"
-          {{- end }}
-        vault.hashicorp.com/agent-pre-populate-only: "false"
-        vault.hashicorp.com/agent-cache-enable: "true"
     spec:
       serviceAccountName: bluestarth-backend
       containers:
@@ -80,13 +99,30 @@ spec:
               cpu: 500m
               memory: 512Mi
           command:
-            - /bin/sh
-            - -c
-            - |
-              until [ -f /vault/secrets/app.env ]; do sleep 1; done
-              . /vault/secrets/app.env
-              node index.js
+            - node
+          args:
+            - index.js
           env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: bluestarth-secret
+                  key: JWT_SECRET
+            - name: DISCORD_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: bluestarth-secret
+                  key: DISCORD_CLIENT_ID
+            - name: DISCORD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: bluestarth-secret
+                  key: DISCORD_CLIENT_SECRET
+            - name: DISCORD_ADMIN_IDS
+              valueFrom:
+                secretKeyRef:
+                  name: bluestarth-secret
+                  key: DISCORD_ADMIN_IDS
             - name: DB_PATH
               value: /data/db.sqlite
             - name: UPLOAD_DIR
