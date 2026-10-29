@@ -1,6 +1,6 @@
 
 ---
-apiVersion: external-secrets.io/v1
+apiVersion: external-secrets.io/valpha1
 kind: ExternalSecret
 metadata:
   name: bluestarth-secret
