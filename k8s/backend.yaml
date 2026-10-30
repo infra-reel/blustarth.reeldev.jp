@@ -25,19 +25,19 @@ spec:
   data:
     - secretKey: JWT_SECRET
       remoteRef:
-        key: bluestarth
+        key: bluestarth-secret
         property: jwt-secret
     - secretKey: DISCORD_CLIENT_ID
       remoteRef:
-        key: bluestarth
+        key: bluestarth-secret
         property: discord-client-id
     - secretKey: DISCORD_CLIENT_SECRET
       remoteRef:
-        key: bluestarth
+        key: bluestarth-secret
         property: discord-client-secret
     - secretKey: DISCORD_ADMIN_IDS
       remoteRef:
-        key: bluestarth
+        key: bluestarth-secret
         property: discord-admin-ids
 ---
 apiVersion: v1
