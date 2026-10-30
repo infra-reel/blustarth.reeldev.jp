@@ -9,6 +9,15 @@ spec:
   refreshInterval: 1h
   secretStoreRef:
     name: vault-backend
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: bluestarth-secret
+  namespace: bluestarth
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: vault-backend
     kind: ClusterSecretStore
   target:
     name: bluestarth-secret
@@ -16,19 +25,19 @@ spec:
   data:
     - secretKey: JWT_SECRET
       remoteRef:
-        key: secret/bluestarth
+        key: bluestarth
         property: jwt-secret
     - secretKey: DISCORD_CLIENT_ID
       remoteRef:
-        key: secret/bluestarth
+        key: bluestarth
         property: discord-client-id
     - secretKey: DISCORD_CLIENT_SECRET
       remoteRef:
-        key: secret/bluestarth
+        key: bluestarth
         property: discord-client-secret
     - secretKey: DISCORD_ADMIN_IDS
       remoteRef:
-        key: secret/bluestarth
+        key: bluestarth
         property: discord-admin-ids
 ---
 apiVersion: v1
